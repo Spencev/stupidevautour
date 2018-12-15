@@ -1,0 +1,45 @@
+Monte Carlo Method Maybe?
+Need to be able to generate as much info as possible for the AI
+
+******************
+
+keep track of what the opponent has played
+can calculate the percentage of winning each hand depending on what cards have been played
+
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+
+At starting state - this chart will need to be generated every turn
+15 - 93.3% W, 6.6% T
+14 - 86.6% W, 6.6% T, 6.6% L
+13 - 80% W, 6.6% T, 13.3% L
+12 - 73.3% W, 6.6% T, 20% L
+11 - 66.6% W, 6.6% T, 26.6% L
+10 - 60% W, 6.6% T, 33.3% L
+9 - 53.3% W, 6.6% T, 40% L
+8 - 46.6% W, 6.6% T, 46.6% L
+7 - 40% W, 6.6% T, 53.3% L
+6 - 33.3% W, 6.6% T, 60% L
+5 - 26.6% W, 6.6% T, 66.6% L
+4 - 20% W, 6.6% T, 73.3% L
+3 - 13.3% W, 6.6% T, 80% L
+2 - 6.6% W, 6.6% T, 86.6% L
+1 - 0% W, 6.6% T, 93.3% L
+
+******************
+A player's aggression and aversion will be calculated for the last 10 games (aka 150 plays) 
+Might be changed later but a good starting point
+
+Aggression (+positive card)
+    How high of cards does a player play on positive values
+    Based on the percentile of cards in his hand
+    100 cards in this data set
+
+Aversion (-negative card)
+    How high of cards does a player play on negative values
+    Based on the percentile of cards in his hand
+    50 plays in this data set
+    Percentile of card played as a decimal times the number value of the card to be bid on
+    Max of -3
+    
