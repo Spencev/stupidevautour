@@ -35,3 +35,8 @@ def removeProfile(nameChosen, profileList):
     for profile in profileList["profileList"]:
         if nameChosen == profile["user"]:
             profileList["profileList"].remove(profile)
+
+def saveProfile(username, profileList)
+    for profile in profileList["profileList"]:
+        if username == profile["user"]:
+            
