@@ -40,12 +40,6 @@ def updateAversion(playerHand, playerPlayed, lastCard, negMiddleDeck, userProfil
     
 def intialize():
     profileList = profile.loadProfiles()
-    userList = profile.genUsers(profileList)
-    print(userList)
-    profile.newUser("Tiff", profileList)
-    userProfile = profile.selectProfile("Spencer", profileList)
-    print(userProfile)
-    updateAggression([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 15, 10, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], userProfile)
-    print(userProfile)
+    return profileList
     
 intialize()

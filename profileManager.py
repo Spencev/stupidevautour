@@ -36,7 +36,12 @@ def removeProfile(nameChosen, profileList):
         if nameChosen == profile["user"]:
             profileList["profileList"].remove(profile)
 
-def saveProfile(username, profileList)
+def saveProfile(username, profileList, userProfile):
     for profile in profileList["profileList"]:
         if username == profile["user"]:
-            
+            profile = userProfile
+            statsProfiles = open("profiles.txt", "w")
+            statsProfiles.truncate(0)
+            statsProfiles.seek(0)
+            json.dump(profileList, statsProfiles)
+            print("Profile saved.")
