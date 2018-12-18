@@ -3,13 +3,14 @@ import json
 def loadProfiles():
     statsProfiles = open("profiles.txt", "r")
     profileList = json.load(statsProfiles)
-    print(profileList)
+    print("Profiles loaded.")
     return profileList
 
 def genUsers(profileList):
     userList = []
     for profile in profileList["profileList"]:
         userList.append(profile["user"])
+    print("Profile list generated")
     return userList
 
 def newUser(userInput, profileList):
@@ -24,19 +25,21 @@ def newUser(userInput, profileList):
         statsProfiles.truncate(0)
         statsProfiles.seek(0)
         json.dump(profileList, statsProfiles)
-        print("User: " + userInput + " added successfully!")
+        print("Profile: " + userInput + " added.")
 
 def selectProfile(nameChosen, profileList):
     for profile in profileList["profileList"]:
         if nameChosen == profile["user"]:
+            print("Profile: " + nameChosen + " selected.")
             return profile
 
 def removeProfile(nameChosen, profileList):
     for profile in profileList["profileList"]:
         if nameChosen == profile["user"]:
             profileList["profileList"].remove(profile)
+            print("Profile: " + nameChosen + " removed.")
 
-def saveProfile(username, profileList, userProfile):
+def save(username, profileList, userProfile):
     for profile in profileList["profileList"]:
         if username == profile["user"]:
             profile = userProfile
@@ -44,4 +47,4 @@ def saveProfile(username, profileList, userProfile):
             statsProfiles.truncate(0)
             statsProfiles.seek(0)
             json.dump(profileList, statsProfiles)
-            print("Profile saved.")
+            print("Profile: " + username + " saved.")

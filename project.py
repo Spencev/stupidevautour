@@ -1,17 +1,35 @@
 from tkinter import *
 from PIL import ImageTk, Image
 import random
+import spencemain as manager
 
 valueCardsPlayer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 valueCardsComputer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 bidCards = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+bidDict = [{"value": -5, "image":"imgs/card-5.png"}, 
+           {"value": -4, "image":"imgs/card-4.png"}, 
+           {"value": -3, "image":"imgs/card-3.png"}, 
+           {"value": -2, "image":"imgs/card-2.png"}, 
+           {"value": -1, "image":"imgs/card-1.png"},
+           {"value": 1, "image":"imgs/card1.png"}, 
+           {"value": 2, "image":"imgs/card2.png"},
+           {"value": 3, "image":"imgs/card3.png"},
+           {"value": 4, "image":"imgs/card4.png"},
+           {"value": 5, "image":"imgs/card5.png"},
+           {"value": 6, "image":"imgs/card6.png"},
+           {"value": 7, "image":"imgs/card7.png"},
+           {"value": 8, "image":"imgs/card8.png"},
+           {"value": 9, "image":"imgs/card9.png"},
+           {"value": 10, "image":"imgs/card10.png"}]
 
 currentBid = 0
 currentPlayerBid = 0
 
 playerScore = 0
 computerScore = 0
+
+profileList = manager.initialize()
 
 #--------------------------------------------------------------------------------------------
 
@@ -56,11 +74,10 @@ class Window1:
 class WindowSpencePick:
     
     def __init__(self, master):
-        import spencemain as manager
+        global profileList
         
         self.master = master
         
-        profileList = manager.intialize()
         userList = manager.profile.genUsers(profileList)
         
         for userIndex in range(len(userList)):
@@ -69,6 +86,9 @@ class WindowSpencePick:
         
         self.createNew = Button(self.master, text="Create a new profile", command=self.createProfile)
         self.createNew.pack()
+        
+        self.checkStats = Button(self.master, text="Check all stats", command=self.checkStatistics)
+        self.checkStats.pack()
         
         self.mm = Button(self.master, text="Main Menu", command=self.load_spence_game)
         self.mm.pack()
@@ -80,7 +100,6 @@ class WindowSpencePick:
     
     def load_user(self, user):
         import spencemain as manager
-        profileList = manager.intialize()
         profile = manager.profile.selectProfile(user, profileList)
         
         self.wipe()
@@ -90,9 +109,46 @@ class WindowSpencePick:
         self.wipe()
         self.another = createProfileWindow(self.master)
     
+    def checkStatistics(self):
+        self.wipe()
+        self.another = statsWindow(self.master)
+    
     def load_spence_game(self):
         self.wipe()
         self.another = Window1(self.master)
+        
+class statsWindow:
+    def __init__(self, master):
+        global profileList
+        
+        self.master = master
+        
+        self.infoTag = Label(master, text="\nStats for all profiles")
+        self.infoTag.pack()
+        
+        compWins = 0
+        compLosses = 0
+        
+        for profile in profileList["profileList"]:
+            compWins += profile["losses"]
+            compLosses += profile["wins"]
+            self.userLabel = Label(self.master, text=profile["user"] + ": Wins: " + str(profile["wins"]) + " Losses: " + str(profile["losses"]))
+            self.userLabel.pack()
+        
+        self.compLabel = Label(self.master, text="Computer: Wins: " + str(compWins) + " Losses: " + str(compLosses))
+        self.compLabel.pack()
+        
+        self.backButton = Button(master, text="Back to profile select", command=self.backToMenu)
+        self.backButton.pack()
+    
+    def wipe(self):
+        buttonList = self.master.pack_slaves()
+        for button in buttonList:
+            button.destroy()
+        
+    def backToMenu(self):
+        self.wipe()
+        self.another = WindowSpencePick(self.master)
 
 class createProfileWindow:
     
@@ -115,7 +171,6 @@ class createProfileWindow:
     def insertProfile(self, userInput):
         import spencemain as manager
         
-        profileList = manager.intialize()
         manager.profile.newUser(userInput, profileList)
         profile = manager.profile.selectProfile(userInput, profileList)
         
@@ -134,10 +189,11 @@ class WindowGame():
     def __init__(self, master, profile):
         
         self.master = master
-        print("game window created with " + str(profile))
+        print("Game window created for " + profile["user"] + ".")
         
         global valueCardsPlayer
         global bidCards
+        global bidDict
         global currentBid
         global currentPlayerBid
         global playerScore
@@ -145,69 +201,111 @@ class WindowGame():
 
         self.master = master
         
-        # If players have no cards left, the game is over.
+        # Get current card to bid on.
+        currentBid = random.choice(bidDict)
+        bidDict.remove(currentBid)
 
-        if (valueCardsPlayer == [] and valueCardsComputer == []):
+        image = Image.open(currentBid["image"])
+        img = ImageTk.PhotoImage(image)
 
-            if (playerScore > computerScore):
-                self.playerWinsLabel = Label(master, text="PLAYER WINS!")
-                self.playerWinsLabel.pack()
-            else:
-                self.computerWinsLabel = Label(master, text="COMPUTER WINS!")
-                self.computerWinsLabel.pack()
+        self.bidLabel = Label(image = img)
+        self.bidLabel.image = img
+        self.bidLabel.pack()
 
-            self.endGame = Label(master, text="The game is over.")
-            self.endGame.pack()
+        # Choose a card amount of bid on current card (currently random).
+        for cardNumber in valueCardsPlayer:
+            self.cardPickButton = Button(self.master, text=cardNumber, command= lambda cardNumber=cardNumber: self.playCard(master, cardNumber, profile))
+            self.cardPickButton.pack(side="left")
 
-            self.mm = Button(self.master, text="Close", command=master.destroy)
-            self.mm.pack()
-            
-        else:
+        # Current scores.
+        self.playerScoreLabel = Label(master, text="Player's Score: " + str(playerScore))
+        self.playerScoreLabel.pack()
 
-            # Get current card to bid on.
+        self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
+        self.computerScoreLabel.pack()
 
-            bidCards = random.sample( bidCards, len(bidCards))
-            currentBid = random.choice(bidCards)
+        # Continue to computer's turn to bid.
 
-            self.bidLabel = Label(master, text="Current Bid Card: " + str(currentBid))
-            self.bidLabel.pack()
-
-            # Choose a card amount of bid on current card (currently random).
-            for cardNumber in valueCardsPlayer:
-                self.cardPickButton = Button(self.master, text=cardNumber, command= lambda cardNumber=cardNumber: self.playCard(master, cardNumber))
-                self.cardPickButton.pack(side='left')
-
-            # Current scores.
-            self.playerScoreLabel = Label(master, text="Player's Score: " + str(playerScore))
-            self.playerScoreLabel.pack()
-
-            self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
-            self.computerScoreLabel.pack()
-
-            # Continue to computer's turn to bid.
-            
-            self.continueGame = Button(self.master, text="Continue", command=self.load_game)
-            self.continueGame.pack()
-    
     def wipeButtons(self):
         widgetList = self.master.pack_slaves()
         for widget in widgetList:
             if str(type(widget)) == "<class 'tkinter.Button'>":
                 widget.destroy()
     
-    def playCard(self, master, cardNumber):
+    def playCard(self, master, cardNumber, profile):
+        import spencemain as manager
+        
         self.master = master
         global valueCardsComputer
         global valueCardsPlayer
         global bidCards
+        global bidDict
         global currentBid
         global playerScore
         global computerScore
+        global profileList
         
         valueCardsPlayer.remove(cardNumber)
         
         valueCardsComputer = random.sample(valueCardsComputer, len(valueCardsComputer))
         computerChoice = random.choice(valueCardsComputer)
+        
+        if currentBid["value"] > 0:
+            if cardNumber > computerChoice:
+                playerScore += currentBid["value"]
+            if cardNumber < computerChoice:
+                computerScore += currentBid["value"]
+        else:
+            if cardNumber > computerChoice:
+                computerScore += currentBid["value"]
+            if cardNumber < computerChoice:
+                playerScore += currentBid["value"]
+        
+        self.wipeButtons()
+        self.bidLabel.destroy()
+        self.playerScoreLabel.destroy()
+        self.computerScoreLabel.destroy()
+        self.playerChoiceLabel = Label(master, text="")
+        self.computerChoiceLabel = Label(master, text="")
+        
+        if len(bidDict) != 15:
+            self.playerChoiceLabel.destroy()
+            self.computerChoiceLabel.destroy()
+
+        self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
+        self.playerScoreLabel.pack()
+
+        self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
+        self.computerScoreLabel.pack()
+        
+        if bidDict != []:
+            currentBid = random.choice(bidDict)
+            bidDict.remove(currentBid)
+
+            image = Image.open(currentBid["image"])
+            img = ImageTk.PhotoImage(image)
+
+            self.bidLabel = Label(image = img)
+            self.bidLabel.image = img
+            self.bidLabel.pack()
+        
+        else:
+            if (playerScore > computerScore):
+                self.playerWinsLabel = Label(master, text="PLAYER WINS!")
+                self.playerWinsLabel.pack()
+                profile["wins"] += 1
+            else:
+                self.computerWinsLabel = Label(master, text="COMPUTER WINS!")
+                self.computerWinsLabel.pack()
+                profile["losses"] += 1
+            
+            manager.profile.save(profile["user"], profileList, profile)
+            
+            self.endGame = Label(master, text="The game is over.")
+            self.endGame.pack()
+
+            self.mm = Button(self.master, text="Close", command=master.destroy)
+            self.mm.pack()
         
         self.computerChoiceLabel = Label(master, text="Computer played: " + str(computerChoice))
         self.computerChoiceLabel.pack()
@@ -215,36 +313,8 @@ class WindowGame():
         self.playerChoiceLabel = Label(master, text="You played: " + str(cardNumber))
         self.playerChoiceLabel.pack()
         
-        if currentBid > 0:
-            if cardNumber > computerChoice:
-                playerScore += currentBid
-            if cardNumber < computerChoice:
-                computerScore += currentBid
-        else:
-            if cardNumber > computerChoice:
-                computerScore += currentBid
-            if cardNumber < computerChoice:
-                playerScore += currentBid
-        
-        self.wipeButtons()
-        
-        bidCards = random.sample( bidCards, len(bidCards))
-        currentBid = random.choice(bidCards)
-
-        self.bidLabel = Label(master, text="Current Bid Card: " + str(currentBid))
-        self.bidLabel.pack()
-        
-        self.playerScoreLabel.destroy()
-        self.computerScoreLabel.destroy()
-        
-        self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
-        self.playerScoreLabel.pack()
-
-        self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
-        self.computerScoreLabel.pack()
-        
         for numberCard in valueCardsPlayer:
-            self.cardPickButton = Button(self.master, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard))
+            self.cardPickButton = Button(self.master, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard, profile))
             self.cardPickButton.pack(side='left')
 
     def load_game(self):
@@ -352,7 +422,7 @@ class Game:
 
             # Get current card to bid on.
 
-            bidCards = random.sample( bidCards, len(bidCards))
+            bidCards = random.sample(bidCards, len(bidCards))
             currentBid = random.choice(bidCards)
 
             self.bidLabel = Label(master, text="Current Bid Card: " + str(currentBid))

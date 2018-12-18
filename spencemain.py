@@ -38,8 +38,6 @@ def updateAversion(playerHand, playerPlayed, lastCard, negMiddleDeck, userProfil
     newRating = round(sum(userProfile["aversionList"]) / float(len(userProfile["aversionList"])), 3)
     userProfile["aversion"] = newRating
     
-def intialize():
+def initialize():
     profileList = profile.loadProfiles()
     return profileList
-    
-intialize()
