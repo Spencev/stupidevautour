@@ -31,8 +31,6 @@ computerScore = 0
 
 profileList = manager.initialize()
 
-#--------------------------------------------------------------------------------------------
-
 class Window1:
 
     def __init__(self, master):
@@ -40,18 +38,25 @@ class Window1:
         self.master = master
         master.title("Stupid Vulture")
         master.geometry("1080x720")
+        master.configure(background="#034D01")
+        master.grid_rowconfigure(0, weight=1)
+        master.grid_rowconfigure(5, weight=1)
+        master.grid_columnconfigure(0, weight=1)
+        master.grid_columnconfigure(2, weight=1)
 
         self.intro = Label(master, text="\nWelcome to Stupid Vulture - The card game!\n")
-        self.intro.pack()
+        self.intro.configure(background="#034D01")
+        self.intro.configure(foreground="white")
+        self.intro.grid(row=1, column=1, sticky=NSEW)
 
         self.play = Button(self.master, text="Play against Dan's AI", command=self.load_dan)
-        self.play.pack()
+        self.play.grid(row=2, column=1, pady=(10, 0))
         
-        self.playSpence = Button(self.master, text="Play against Spencer's AI", command=self.load_spence)
-        self.playSpence.pack()
+        self.playSpence = Button(self.master, text="Play against Spencer's AI", command=lambda:self.load_spence(master))
+        self.playSpence.grid(row=3, column=1, pady=(10, 0))
 
         self.close = Button(self.master, text="Close", command=master.destroy)
-        self.close.pack()
+        self.close.grid(row=4, column=1, pady=(10, 0))
 
     def load_dan(self):
         
@@ -62,12 +67,13 @@ class Window1:
 
         self.another = Window2(self.master)
     
-    def load_spence(self):
+    def load_spence(self, master):
         
         self.intro.destroy()
         self.play.destroy()
         self.playSpence.destroy()
         self.close.destroy()
+        master.grid_rowconfigure(5, weight=0)
         
         self.another = WindowSpencePick(self.master)
         
@@ -78,23 +84,36 @@ class WindowSpencePick:
         
         self.master = master
         
+        self.infoText = Label(master, text="Please select a profile")
+        self.infoText.configure(background="#034D01")
+        self.infoText.configure(foreground="white")
+        self.infoText.grid(row=1, column=1, sticky=NSEW)
+        
         userList = manager.profile.genUsers(profileList)
+        
+        rowTracker = 2
         
         for userIndex in range(len(userList)):
             self.userButton = Button(self.master, text=userList[userIndex], command= lambda userIndex=userIndex: self.load_user(userList[userIndex]))
-            self.userButton.pack()
+            self.userButton.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
+            rowTracker += 1
         
         self.createNew = Button(self.master, text="Create a new profile", command=self.createProfile)
-        self.createNew.pack()
+        self.createNew.grid(row=rowTracker, column=1, pady=(20, 0), sticky=NSEW)
+        rowTracker += 1
         
         self.checkStats = Button(self.master, text="Check all stats", command=self.checkStatistics)
-        self.checkStats.pack()
+        self.checkStats.grid(row=rowTracker, column=1, pady=(20, 0), sticky=NSEW)
+        rowTracker += 1
         
         self.mm = Button(self.master, text="Main Menu", command=self.load_spence_game)
-        self.mm.pack()
+        self.mm.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
+        rowTracker += 1
         
+        master.grid_rowconfigure(rowTracker, weight=1)
+
     def wipe(self):
-        buttonList = self.master.pack_slaves()
+        buttonList = self.master.grid_slaves()
         for button in buttonList:
             button.destroy()
     
@@ -124,6 +143,8 @@ class statsWindow:
         self.master = master
         
         self.infoTag = Label(master, text="\nStats for all profiles")
+        self.infoTag.configure(background="#034D01")
+        self.infoTag.configure(foreground="white")
         self.infoTag.pack()
         
         compWins = 0
@@ -133,9 +154,13 @@ class statsWindow:
             compWins += profile["losses"]
             compLosses += profile["wins"]
             self.userLabel = Label(self.master, text=profile["user"] + ": Wins: " + str(profile["wins"]) + " Losses: " + str(profile["losses"]))
+            self.userLabel.configure(background="#034D01")
+            self.userLabel.configure(foreground="white")
             self.userLabel.pack()
         
-        self.compLabel = Label(self.master, text="Computer: Wins: " + str(compWins) + " Losses: " + str(compLosses))
+        self.compLabel = Label(self.master, text="Computer: Wins: " + str(compWins) + " Losses: " + str(compLosses) + "\n")
+        self.compLabel.configure(background="#034D01")
+        self.compLabel.configure(foreground="white")
         self.compLabel.pack()
         
         self.backButton = Button(master, text="Back to profile select", command=self.backToMenu)
@@ -148,6 +173,7 @@ class statsWindow:
         
     def backToMenu(self):
         self.wipe()
+        sel.backButton.destroy()
         self.another = WindowSpencePick(self.master)
 
 class createProfileWindow:
@@ -210,6 +236,7 @@ class WindowGame():
 
         self.bidLabel = Label(image = img)
         self.bidLabel.image = img
+        self.bidLabel.configure(background="#034D01")
         self.bidLabel.pack()
 
         # Choose a card amount of bid on current card (currently random).
@@ -219,13 +246,25 @@ class WindowGame():
 
         # Current scores.
         self.playerScoreLabel = Label(master, text="Player's Score: " + str(playerScore))
+        self.playerScoreLabel.configure(foreground="white")
+        self.playerScoreLabel.configure(background="#034D01")
         self.playerScoreLabel.pack()
 
         self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
+        self.computerScoreLabel.configure(foreground="white")
+        self.computerScoreLabel.configure(background="#034D01")
         self.computerScoreLabel.pack()
+        
+        self.backButton = Button(self.master, text="Back to menu", command= lambda: self.backToMenu(master))
+        self.backButton.place(relx=1, x=-40, y=40, anchor=SE)
 
-        # Continue to computer's turn to bid.
-
+    def backToMenu(self, master):
+        widgetList = self.master.pack_slaves()
+        for widget in widgetList:
+            widget.destroy()
+        
+        self.another = WindowSpencePick(self.master)
+        
     def wipeButtons(self):
         widgetList = self.master.pack_slaves()
         for widget in widgetList:
@@ -268,14 +307,17 @@ class WindowGame():
         self.playerChoiceLabel = Label(master, text="")
         self.computerChoiceLabel = Label(master, text="")
         
-        if len(bidDict) != 15:
-            self.playerChoiceLabel.destroy()
-            self.computerChoiceLabel.destroy()
+        self.playerChoiceLabel.destroy()
+        self.computerChoiceLabel.destroy()
 
         self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
+        self.playerScoreLabel.configure(foreground="white")
+        self.playerScoreLabel.configure(background="#034D01")
         self.playerScoreLabel.pack()
 
         self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
+        self.computerScoreLabel.configure(foreground="white")
+        self.computerScoreLabel.configure(background="#034D01")
         self.computerScoreLabel.pack()
         
         if bidDict != []:
@@ -287,6 +329,7 @@ class WindowGame():
 
             self.bidLabel = Label(image = img)
             self.bidLabel.image = img
+            self.bidLabel.configure(background="#034D01")
             self.bidLabel.pack()
         
         else:
@@ -308,9 +351,13 @@ class WindowGame():
             self.mm.pack()
         
         self.computerChoiceLabel = Label(master, text="Computer played: " + str(computerChoice))
+        self.computerChoiceLabel.configure(foreground="white")
+        self.computerChoiceLabel.configure(background="#034D01")
         self.computerChoiceLabel.pack()
         
         self.playerChoiceLabel = Label(master, text="You played: " + str(cardNumber))
+        self.playerChoiceLabel.configure(foreground="white")
+        self.playerChoiceLabel.configure(background="#034D01")
         self.playerChoiceLabel.pack()
         
         for numberCard in valueCardsPlayer:
