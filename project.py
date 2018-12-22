@@ -145,10 +145,11 @@ class statsWindow:
         self.infoTag = Label(master, text="\nStats for all profiles")
         self.infoTag.configure(background="#034D01")
         self.infoTag.configure(foreground="white")
-        self.infoTag.pack()
+        self.infoTag.grid(row=1, column=1, sticky=NSEW)
         
         compWins = 0
         compLosses = 0
+        rowTracker = 2
         
         for profile in profileList["profileList"]:
             compWins += profile["losses"]
@@ -156,24 +157,26 @@ class statsWindow:
             self.userLabel = Label(self.master, text=profile["user"] + ": Wins: " + str(profile["wins"]) + " Losses: " + str(profile["losses"]))
             self.userLabel.configure(background="#034D01")
             self.userLabel.configure(foreground="white")
-            self.userLabel.pack()
+            self.userLabel.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
+            rowTracker += 1
         
         self.compLabel = Label(self.master, text="Computer: Wins: " + str(compWins) + " Losses: " + str(compLosses) + "\n")
         self.compLabel.configure(background="#034D01")
         self.compLabel.configure(foreground="white")
-        self.compLabel.pack()
+        self.compLabel.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
+        rowTracker += 1
         
         self.backButton = Button(master, text="Back to profile select", command=self.backToMenu)
-        self.backButton.pack()
+        self.backButton.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
     
     def wipe(self):
-        buttonList = self.master.pack_slaves()
+        buttonList = self.master.grid_slaves()
         for button in buttonList:
             button.destroy()
         
     def backToMenu(self):
         self.wipe()
-        sel.backButton.destroy()
+        self.backButton.destroy()
         self.another = WindowSpencePick(self.master)
 
 class createProfileWindow:
@@ -182,17 +185,19 @@ class createProfileWindow:
         
         self.master = master
         
-        self.infoTag = Label(master, text="\nPlease enter your name:")
-        self.infoTag.pack()
+        self.infoTag = Label(master, text="Please enter your name:")
+        self.infoTag.configure(background="#034D01")
+        self.infoTag.configure(foreground="white")
+        self.infoTag.grid(row=1, column=1, sticky=NSEW)
         
         self.userInput = Entry(self.master)
-        self.userInput.pack()
+        self.userInput.grid(row=2, column=1, pady=(10, 0), sticky=NSEW)
         
         self.createProfile = Button(master, text="Create profile", command=lambda: self.insertProfile(self.userInput.get()))
-        self.createProfile.pack()
+        self.createProfile.grid(row=3, column=1, pady=(20, 0), sticky=NSEW)
         
         self.cancelButton = Button(master, text="Cancel", command=lambda: self.backToProfile())
-        self.cancelButton.pack()
+        self.cancelButton.grid(row=4, column=1, pady=(10, 0), sticky=NSEW)
     
     def insertProfile(self, userInput):
         import spencemain as manager
@@ -233,40 +238,43 @@ class WindowGame():
 
         image = Image.open(currentBid["image"])
         img = ImageTk.PhotoImage(image)
-
-        self.bidLabel = Label(image = img)
-        self.bidLabel.image = img
-        self.bidLabel.configure(background="#034D01")
-        self.bidLabel.pack()
+        
+        columnTracker = 1
 
         # Choose a card amount of bid on current card (currently random).
         for cardNumber in valueCardsPlayer:
             self.cardPickButton = Button(self.master, text=cardNumber, command= lambda cardNumber=cardNumber: self.playCard(master, cardNumber, profile))
-            self.cardPickButton.pack(side="left")
+            self.cardPickButton.grid(row=3, column=columnTracker)
+            columnTracker += 1
+            
+        self.bidLabel = Label(image = img)
+        self.bidLabel.image = img
+        self.bidLabel.configure(background="#034D01")
+        self.bidLabel.grid(row=2, column=columnTracker)
 
         # Current scores.
         self.playerScoreLabel = Label(master, text="Player's Score: " + str(playerScore))
         self.playerScoreLabel.configure(foreground="white")
         self.playerScoreLabel.configure(background="#034D01")
-        self.playerScoreLabel.pack()
+        self.playerScoreLabel.grid(row=4, column=columnTracker)
 
         self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
         self.computerScoreLabel.configure(foreground="white")
         self.computerScoreLabel.configure(background="#034D01")
-        self.computerScoreLabel.pack()
+        self.computerScoreLabel.grid(row=5, column=columnTracker)
         
         self.backButton = Button(self.master, text="Back to menu", command= lambda: self.backToMenu(master))
-        self.backButton.place(relx=1, x=-40, y=40, anchor=SE)
+        self.backButton.grid(row=1, column=columnTracker, sticky=NSEW)
 
     def backToMenu(self, master):
-        widgetList = self.master.pack_slaves()
+        widgetList = self.master.grid_slaves()
         for widget in widgetList:
             widget.destroy()
         
         self.another = WindowSpencePick(self.master)
         
     def wipeButtons(self):
-        widgetList = self.master.pack_slaves()
+        widgetList = self.master.grid_slaves()
         for widget in widgetList:
             if str(type(widget)) == "<class 'tkinter.Button'>":
                 widget.destroy()
@@ -306,19 +314,8 @@ class WindowGame():
         self.computerScoreLabel.destroy()
         self.playerChoiceLabel = Label(master, text="")
         self.computerChoiceLabel = Label(master, text="")
-        
         self.playerChoiceLabel.destroy()
         self.computerChoiceLabel.destroy()
-
-        self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
-        self.playerScoreLabel.configure(foreground="white")
-        self.playerScoreLabel.configure(background="#034D01")
-        self.playerScoreLabel.pack()
-
-        self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
-        self.computerScoreLabel.configure(foreground="white")
-        self.computerScoreLabel.configure(background="#034D01")
-        self.computerScoreLabel.pack()
         
         if bidDict != []:
             currentBid = random.choice(bidDict)
@@ -350,6 +347,20 @@ class WindowGame():
             self.mm = Button(self.master, text="Close", command=master.destroy)
             self.mm.pack()
         
+        for numberCard in valueCardsPlayer:
+            self.cardPickButton = Button(self.master, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard, profile))
+            self.cardPickButton.pack(side='left')
+        
+        self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
+        self.playerScoreLabel.configure(foreground="white")
+        self.playerScoreLabel.configure(background="#034D01")
+        self.playerScoreLabel.pack()
+
+        self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
+        self.computerScoreLabel.configure(foreground="white")
+        self.computerScoreLabel.configure(background="#034D01")
+        self.computerScoreLabel.pack()
+        
         self.computerChoiceLabel = Label(master, text="Computer played: " + str(computerChoice))
         self.computerChoiceLabel.configure(foreground="white")
         self.computerChoiceLabel.configure(background="#034D01")
@@ -359,10 +370,6 @@ class WindowGame():
         self.playerChoiceLabel.configure(foreground="white")
         self.playerChoiceLabel.configure(background="#034D01")
         self.playerChoiceLabel.pack()
-        
-        for numberCard in valueCardsPlayer:
-            self.cardPickButton = Button(self.master, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard, profile))
-            self.cardPickButton.pack(side='left')
 
     def load_game(self):
 
