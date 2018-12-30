@@ -28,10 +28,7 @@ class Window1:
         master.grid_rowconfigure(5, weight=1)
         master.grid_columnconfigure(0, weight=1)
         master.grid_columnconfigure(2, weight=1)
-        master.option_add("*Font", "TkDefaultFont")
-        default_font = master.nametofont("TkDefaultFont")
-        default_font.configure(size=48)
-
+        
         self.intro = Label(master, text="\nWelcome to Stupid Vulture - The card game!\n")
         self.intro.configure(background="#034D01")
         self.intro.configure(foreground="white")
@@ -144,7 +141,7 @@ class statsWindow:
             compWins += profile["losses"]
             compLosses += profile["wins"]
             compTies += profile["ties"]
-            self.userLabel = Label(self.master, text=profile["user"] + ": Wins: " + str(profile["wins"]) + " Losses: " + str(profile["losses"] + " Ties: " + str(profile["ties"])))
+            self.userLabel = Label(self.master, text=profile["user"] + ": Wins: " + str(profile["wins"]) + " Losses: " + str(profile["losses"]) + " Ties: " + str(profile["ties"]))
             self.userLabel.configure(background="#034D01")
             self.userLabel.configure(foreground="white")
             self.userLabel.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
@@ -217,6 +214,7 @@ class WindowGame():
         print("Game window created for " + profile["user"] + ".")
         
         global valueCardsPlayer
+        global valueCardsComputer
         global bidCards
         global bidDict
         global currentBid
@@ -270,7 +268,7 @@ class WindowGame():
         # Choose a card amount of bid on current card (currently random).
         for cardNumber in valueCardsPlayer:
             self.cardPickButton = Button(playersHand, text=cardNumber, command= lambda cardNumber=cardNumber: self.playCard(master, cardNumber, profile, playersHand, history))
-            self.cardPickButton.grid(row=3, column=columnTracker)
+            self.cardPickButton.grid(row=6, column=columnTracker)
             columnTracker += 1
             
         self.bidLabel = Label(image = img)
@@ -321,9 +319,11 @@ class WindowGame():
         
         valueCardsPlayer.remove(cardNumber)
         
-        valueCardsComputer = random.sample(valueCardsComputer, len(valueCardsComputer))
-        computerChoice = cardNumber
-        computerChoice = random.choice(valueCardsComputer)
+        print(valueCardsComputer)
+        
+        computerChoice = manager.computer.spencerChoice(valueCardsComputer, currentBid)
+        print(computerChoice)
+        valueCardsComputer.remove(computerChoice)
         
         if currentBid["value"] > 0:
             if cardNumber > computerChoice:
@@ -346,6 +346,7 @@ class WindowGame():
         self.computerChoiceLabel.destroy()
         
         if bidDict != []:
+            
             currentBid = random.choice(bidDict)
             bidDict.remove(currentBid)
             
@@ -361,18 +362,21 @@ class WindowGame():
             self.bidLabel.grid(row=2, column=1)
         
         else:
+            
             if (playerScore > computerScore):
                 self.playerWinsLabel = Label(master, text="You win!")
                 self.playerWinsLabel.configure(foreground="white")
                 self.playerWinsLabel.configure(background="#034D01")
                 self.playerWinsLabel.grid(row=3, column=1)
                 profile["wins"] += 1
+                
             elif (playerScore < computerScore):
                 self.computerWinsLabel = Label(master, text="Computer wins!")
                 self.computerWinsLabel.configure(foreground="white")
                 self.computerWinsLabel.configure(background="#034D01")
                 self.computerWinsLabel.grid(row=3, column=1)
                 profile["losses"] += 1
+                
             else:
                 self.tiedLabel = Label(master, text="You tied!")
                 self.tiedLabel.configure(foreground="white")
