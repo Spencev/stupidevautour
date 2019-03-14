@@ -22,17 +22,22 @@ class Window1:
         
         self.master = master
         master.title("Stupid Vulture")
+        #master.configure(background="#034D01")
         master.geometry("1080x720")
-        master.configure(background="#034D01")
-        master.grid_rowconfigure(0, weight=1)
-        master.grid_rowconfigure(5, weight=1)
-        master.grid_columnconfigure(0, weight=1)
-        master.grid_columnconfigure(2, weight=1)
+        background_image = PhotoImage(file="imgs/gameboard.png")
+        background_label = Label(self.master, image=background_image)
+        background_label.image = background_image
+        background_label.place(x=0, y=0, relwidth=1, relheight=1)
         
-        self.intro = Label(master, text="\nWelcome to Stupid Vulture - The card game!\n")
-        self.intro.configure(background="#034D01")
-        self.intro.configure(foreground="white")
+        self.master.grid_rowconfigure(0, weight=1)
+        self.master.grid_rowconfigure(5, weight=1)
+        self.master.grid_columnconfigure(0, weight=1)
+        self.master.grid_columnconfigure(2, weight=1)
+        
+        self.intro = Canvas(self.master, width = 200, height = 25)
         self.intro.grid(row=1, column=1, sticky=NSEW)
+        text_canvas = self.intro.create_text(10, 10, anchor = "nw", fill="")
+        self.intro.itemconfig(text_canvas, text="\nWelcome to Stupid Vulture - The card game!\n")
 
         self.play = Button(self.master, text="Play against Dan's AI", command=self.load_dan)
         self.play.grid(row=2, column=1, pady=(10, 0))
