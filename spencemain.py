@@ -15,7 +15,7 @@ def generatePercents(playerHand, compHand):
                 tieCount += 1
             if compCard < playerCard:
                 loseCount += 1
-        percentMatrix.append([round((winCount/15)*100, 2), round((tieCount/15)*100, 2), round((loseCount/15)*100, 2)])
+        percentMatrix.append([round((winCount/len(compHand))*100, 2), round((tieCount/len(compHand))*100, 2), round((loseCount/len(compHand))*100, 2)])
     return percentMatrix
     
 def calcAversion(playerHand, playerPlayed, lastCard, negMiddleDeck):
