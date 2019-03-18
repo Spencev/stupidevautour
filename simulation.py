@@ -48,20 +48,24 @@ def playGame(participant1, participant2):
     else:
         return [0, 0]
 
-def sumScores(compStats):
-    return compStat[0][1] + compStats[1][1] + compStats[2][1]
+def sumScores(stat):
+    return stat[0][1] + stat[1][1] + stat[2][1]
 
 def alterPool(participantList, compStats):
+    scoreList = [(stat[0] * 10) + stat[1] for stat in compStats]
+    print(scoreList)
+    averageScore = sum(scoreList) / len(scoreList)
+    
     indexCounter = 0 
     for stat in compStats:
-        if (compStats[0][0] + compStats[1][0] + compStats[2][0]) <= 0:
-            participantList[indexCounter] = setParticipants(1)
-
+        
         indexCounter += 1
+    if (compStats[0][0] + compStats[1][0] + compStats[2][0]) <= 0:
+        participantList[indexCounter] = setParticipants(1)
     return participantList
 
 def simulateTourney(profile):
-    participantList = setParticipants(100)
+    participantList = setParticipants(10)
     participantLength = len(participantList)
     count = 0
     cuttingDown = True
@@ -69,9 +73,10 @@ def simulateTourney(profile):
         compStatsList = []
         for participant in participantList:
             compStats = [playGame(participant, [profile["aggression"], profile["aversion"]]), playGame(participant, [profile["aggression"], profile["aversion"]]), playGame(participant, [profile["aggression"], profile["aversion"]])]
-            compStatList.append(compStats)
-        participantList = alterPool(participantList, compStats)
-        print(participantList)
+            compStatsList.append(compStats)
+        print(compStatsList)
+        participantList = alterPool(participantList, compStatsList)
+        count += 1
     print(participantList)
     
 profileList = profile.loadProfiles()
