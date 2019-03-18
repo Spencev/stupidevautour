@@ -1,5 +1,6 @@
 import random
 import spencemain as utility
+import profileManager as profile
 
 def setParticipants(amount):
     participantList = []
@@ -41,11 +42,11 @@ def playGame(participant1, participant2):
         #print("player score: " + str(score2))
         #print("comp score: " + str(score1))
     if score1 > score2:
-        return False
+        return [1, score1 - score2]
     elif score1 < score2:
-        return True
+        return [-1, score1 - score2]
     else:
-        return "tie"
+        return [0, 0]
 
 def simulateTourney(profile):
     participantList = setParticipants(100)
@@ -53,13 +54,20 @@ def simulateTourney(profile):
     count = 0
     cuttingDown = True
     while cuttingDown and count < 100:
+        if len(participantList) == 1:
+            break
         for participant in participantList:
-            compWin = playGame(participant, [profile["aggression"], profile["aversion"]])
-            if !compWin:
-                participantList.remove(participant)
+            compStats = [playGame(participant, [profile["aggression"], profile["aversion"]]), playGame(participant, [profile["aggression"], profile["aversion"]]), playGame(participant, [profile["aggression"], profile["aversion"]])]
+            if (compStats[0][0] + compWin[1][0] + compStats[2][0]) <= 0:
+                participant = setParticipants(1)
         if len(participantList) != participantLength:
             participantLength = len(participantList)
         else:
             cuttingDown = False
-
+        print(participantList)
+    print(participantList)
+    
+profileList = profile.loadProfiles()
+spenceProfile = profile.selectProfile("Spencer", profileList)
+simulateTourney(spenceProfile)
 print(playGame([1, 1], [1, 1]))
