@@ -319,13 +319,11 @@ class WindowGame():
         
         valueCardsPlayer.remove(cardNumber)
         
-        print(valueCardsComputer)
-        
         computerChoice = manager.computer.spencerChoice(valueCardsComputer, currentBid)
-        print(computerChoice)
         valueCardsComputer.remove(computerChoice)
         
         if currentBid["value"] > 0:
+            
             if cardNumber > computerChoice:
                 playerScore += currentBid["value"]
             if cardNumber < computerChoice:

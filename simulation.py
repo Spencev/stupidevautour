@@ -1,6 +1,7 @@
 import random
 import spencemain as utility
 import profileManager as profile
+import numpy as np
 
 def setParticipants(amount):
     participantList = []
@@ -51,17 +52,33 @@ def playGame(participant1, participant2):
 def sumScores(stat):
     return stat[0][1] + stat[1][1] + stat[2][1]
 
-def alterPool(participantList, compStats):
-    scoreList = [(stat[0] * 10) + stat[1] for stat in compStats]
-    print(scoreList)
-    averageScore = sum(scoreList) / len(scoreList)
-    
-    indexCounter = 0 
-    for stat in compStats:
-        
-        indexCounter += 1
-    if (compStats[0][0] + compStats[1][0] + compStats[2][0]) <= 0:
-        participantList[indexCounter] = setParticipants(1)
+def alterPool(participantList, compStatsList):
+    scoreList = []
+    for stat in compStatsList:
+        score = 0
+        for game in stat:
+            score += (game[0] * 30) + game[1]
+        scoreList.append(score)
+    medianScore = np.percentile(scoreList, 50)
+    bottomQuarterScore = np.percentile(scoreList, 25)
+    topQuarterScore = np.percentile(scoreList, 75)
+    indexCount = 0
+    topOfPool = []
+    for score in scoreList:
+        if score > topQuarterScore:
+            topOfPool.append(participantList[indexCount])
+        indexCount += 1
+    indexCount = 0
+    for score in scoreList:
+        if score > medianScore:
+            continue
+        if score <= medianScore and score > bottomQuarterScore:
+            exemplar = random.choice(topOfPool)
+            participantList[indexCount][0] = (participantList[indexCount][0] + participantList[indexCount][0] + participantList[indexCount][0] + exemplar[0]) / 4
+            participantList[indexCount][1] = (participantList[indexCount][1] + participantList[indexCount][1] + participantList[indexCount][1] + exemplar[1]) / 4
+        if score <= bottomQuarterScore:
+            partcipantList[indexCount] = setParticipants(1)
+        indexCount += 1
     return participantList
 
 def simulateTourney(profile):
@@ -74,12 +91,9 @@ def simulateTourney(profile):
         for participant in participantList:
             compStats = [playGame(participant, [profile["aggression"], profile["aversion"]]), playGame(participant, [profile["aggression"], profile["aversion"]]), playGame(participant, [profile["aggression"], profile["aversion"]])]
             compStatsList.append(compStats)
-        print(compStatsList)
-        participantList = alterPool(participantList, compStatsList)
+        alterPool(participantList, compStatsList)
         count += 1
-    print(participantList)
     
 profileList = profile.loadProfiles()
 spenceProfile = profile.selectProfile("Spencer", profileList)
 simulateTourney(spenceProfile)
-print(playGame([1, 1], [1, 1]))
