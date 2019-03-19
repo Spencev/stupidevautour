@@ -23,9 +23,6 @@ def playGame(participant1, participant2):
         hand1.remove(hand1Choice)
         hand2Choice = random.choice(hand2)
         hand2.remove(hand2Choice)
-        #print("bid: " + str(currentBid))
-        #print("comp: " + str(hand1Choice))
-        #print("player: " + str(hand2Choice))
         if currentBid > 0:
             if hand1Choice > hand2Choice:
                 score1 += currentBid
@@ -40,8 +37,6 @@ def playGame(participant1, participant2):
                 score1 += currentBid
             else:
                 continue
-        #print("player score: " + str(score2))
-        #print("comp score: " + str(score1))
     if score1 > score2:
         return [1, score1 - score2]
     elif score1 < score2:

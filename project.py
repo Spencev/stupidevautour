@@ -323,12 +323,24 @@ class WindowGame():
         valueCardsComputer.remove(computerChoice)
         
         if currentBid["value"] > 0:
+            posMiddleDeck = []
+            for card in bidDict:
+                if card["value"] > 0:
+                    posMiddleDeck.append(card["value"])
+            manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile)
             
             if cardNumber > computerChoice:
                 playerScore += currentBid["value"]
             if cardNumber < computerChoice:
                 computerScore += currentBid["value"]
+                
         else:
+            negMiddleDeck = []
+            for card in bidDict:
+                if card["value"] < 0:
+                    negMiddleDeck.append(card["value"])
+            manager.updateAversion(playersHand, cardNumber, currentBid["value"], negMiddleDeck, profile)
+            
             if cardNumber > computerChoice:
                 computerScore += currentBid["value"]
             if cardNumber < computerChoice:
