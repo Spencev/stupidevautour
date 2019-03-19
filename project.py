@@ -267,7 +267,7 @@ class WindowGame():
         
         # Choose a card amount of bid on current card (currently random).
         for cardNumber in valueCardsPlayer:
-            self.cardPickButton = Button(playersHand, text=cardNumber, command= lambda cardNumber=cardNumber: self.playCard(master, cardNumber, profile, playersHand, history))
+            self.cardPickButton = Button(playersHand, text=cardNumber, command= lambda cardNumber=cardNumber: self.playCard(master, cardNumber, profile, valueCardsPlayer, history))
             self.cardPickButton.grid(row=6, column=columnTracker)
             columnTracker += 1
             
@@ -327,6 +327,8 @@ class WindowGame():
             for card in bidDict:
                 if card["value"] > 0:
                     posMiddleDeck.append(card["value"])
+            print(posMiddleDeck)
+            print(playersHand)
             manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile)
             
             if cardNumber > computerChoice:
@@ -408,7 +410,7 @@ class WindowGame():
             self.closeGame.grid(row=8, column=1, pady=(10,0))
         
         for numberCard in valueCardsPlayer:
-            self.cardPickButton = Button(playersHand, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard, profile, playersHand, history))
+            self.cardPickButton = Button(playersHand, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard, profile, valueCardsPlayer, history))
             self.cardPickButton.pack(side='left')
         
         self.playerScoreLabel = Label(master, text="Your Score: " + str(playerScore))

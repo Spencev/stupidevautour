@@ -19,10 +19,14 @@ def generatePercents(playerHand, compHand):
     return percentMatrix
     
 def calcAversion(playerHand, playerPlayed, lastCard, negMiddleDeck):
-    return (playerPlayed / len(playerHand)) / (abs(lastCard) / len(negMiddleDeck))
+    print(playerPlayed)
+    print(playerHand)
+    print(lastCard)
+    print(len(negMiddleDeck))
+    return (playerPlayed / (len(playerHand) + 1)) / (abs(lastCard) / (len(negMiddleDeck) + 1))
 
 def calcAggression(playerHand, playerPlayed, lastCard, posMiddleDeck):
-    return (playerPlayed / len(playerHand)) / (lastCard / len(posMiddleDeck))
+    return (playerPlayed / (len(playerHand) + 1)) / (lastCard / (len(posMiddleDeck) + 1))
 
 def updateAggression(playerHand, playerPlayed, lastCard, posMiddleDeck, userProfile):
     newToList = calcAggression(playerHand, playerPlayed, lastCard, posMiddleDeck)
@@ -31,7 +35,7 @@ def updateAggression(playerHand, playerPlayed, lastCard, posMiddleDeck, userProf
     userProfile["aggression"] = newRating
 
 def updateAversion(playerHand, playerPlayed, lastCard, negMiddleDeck, userProfile):
-    newToList = calcAversion(playerHand, playerPlayed, lastCard, posMiddleDeck)
+    newToList = calcAversion(playerHand, playerPlayed, lastCard, negMiddleDeck)
     userProfile["aversionList"].append(newToList)
     newRating = round(sum(userProfile["aversionList"]) / float(len(userProfile["aversionList"])), 3)
     userProfile["aversion"] = newRating
