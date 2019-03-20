@@ -2,6 +2,7 @@ from tkinter import *
 from PIL import ImageTk, Image
 import random
 import spencemain as manager
+import simulation as sim
 
 valueCardsPlayer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 valueCardsComputer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -213,6 +214,9 @@ class WindowGame():
         self.master = master
         print("Game window created for " + profile["user"] + ".")
         
+        compAttributes = sim.simulateTourney(profile)
+        print("Tournament completed. " + compAttributes + " is the winner!")
+        
         global valueCardsPlayer
         global valueCardsComputer
         global bidCards
@@ -317,9 +321,7 @@ class WindowGame():
         global computerScore
         global profileList
         
-        valueCardsPlayer.remove(cardNumber)
-        
-        computerChoice = manager.computer.spencerChoice(valueCardsComputer, currentBid)
+        computerChoice = manager.decide(valueCardsPlayer, valueCardsComputer, currentBid)
         valueCardsComputer.remove(computerChoice)
         
         if currentBid["value"] > 0:
@@ -327,8 +329,6 @@ class WindowGame():
             for card in bidDict:
                 if card["value"] > 0:
                     posMiddleDeck.append(card["value"])
-            print(posMiddleDeck)
-            print(playersHand)
             manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile)
             
             if cardNumber > computerChoice:
@@ -347,6 +347,8 @@ class WindowGame():
                 computerScore += currentBid["value"]
             if cardNumber < computerChoice:
                 playerScore += currentBid["value"]
+        
+        valueCardsPlayer.remove(cardNumber)
         
         self.wipeButtons(playersHand, history)
         self.bidLabel.destroy()

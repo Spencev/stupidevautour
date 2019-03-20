@@ -1,6 +1,6 @@
 import json
 import profileManager as profile
-import computer as computer
+import random
 
 def generatePercents(playerHand, compHand):
     percentMatrix = []
@@ -19,14 +19,10 @@ def generatePercents(playerHand, compHand):
     return percentMatrix
     
 def calcAversion(playerHand, playerPlayed, lastCard, negMiddleDeck):
-    print(playerPlayed)
-    print(playerHand)
-    print(lastCard)
-    print(len(negMiddleDeck))
-    return (playerPlayed / (len(playerHand) + 1)) / (abs(lastCard) / (len(negMiddleDeck) + 1))
+    return ((playerHand.index(playerPlayed) + 1) / len(playerHand)) / ((negMiddleDeck.index(lastCard) + 1) / len(negMiddleDeck))
 
 def calcAggression(playerHand, playerPlayed, lastCard, posMiddleDeck):
-    return (playerPlayed / (len(playerHand) + 1)) / (lastCard / (len(posMiddleDeck) + 1))
+    return ((playerHand.index(playerPlayed) + 1) / len(playerHand)) / ((negMiddleDeck.index(lastCard) + 1) / len(posMiddleDeck))
 
 def updateAggression(playerHand, playerPlayed, lastCard, posMiddleDeck, userProfile):
     newToList = calcAggression(playerHand, playerPlayed, lastCard, posMiddleDeck)
@@ -43,3 +39,29 @@ def updateAversion(playerHand, playerPlayed, lastCard, negMiddleDeck, userProfil
 def initialize():
     profileList = profile.loadProfiles()
     return profileList
+
+def decide(playerHand, compHand, participant, currentBid, bidDict):
+    print(playerHand)
+    print(compHand)
+    print(participant)
+    print(currentBid)
+    print(bidDict)
+    percentMatrix = generatePercents(playerHand, compHand)
+    if currentBid == 10:
+        for row in percentMatrix:
+            if row[0] == 100:
+                return compHand[percentMatrix.index(row)]
+        if random.ramdom() < particpant[2]:
+            return compHand[0]
+    if currentBid > 0:
+        posMiddleDeck = []
+        for card in bidDict:
+            if card > 0:
+                posMiddleDeck.append(card)
+        return compHand.index(round(len(compHand) * (participant[0] * ((posMiddleDeck.index(currentBid) + 1) / len(posMiddleDeck)))))
+    if currentBid < 0:
+        negMiddleDeck = []
+        for card in bidDict:
+            if card < 0:
+                negMiddleDeck.append(card)
+        return compHand.index(round(len(compHand) * (participant[1] * ((negMiddleDeck.index(currentBid) + 1) / len(negMiddleDeck)))))
