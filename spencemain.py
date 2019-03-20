@@ -40,6 +40,9 @@ def initialize():
     profileList = profile.loadProfiles()
     return profileList
 
+def rescale(validList, attribute, isAggression):
+    
+
 def decide(playerHand, compHand, participant, currentBid, bidDict):
     print(playerHand)
     print(compHand)
@@ -58,10 +61,18 @@ def decide(playerHand, compHand, participant, currentBid, bidDict):
         for card in bidDict:
             if card > 0:
                 posMiddleDeck.append(card)
-        return compHand.index(round(len(compHand) * (participant[0] * ((posMiddleDeck.index(currentBid) + 1) / len(posMiddleDeck)))))
+        validList = []
+        for card in compHand:
+            validList.append(calcAggression(compHand, card, currentBid, posMiddleDeck))
+        rescaledAggression = rescale(validList, participant[0], True)
+        return compHand.index(round(len(compHand) * (rescaledAggression * ((posMiddleDeck.index(currentBid) + 1) / len(posMiddleDeck)))))
     if currentBid < 0:
         negMiddleDeck = []
         for card in bidDict:
             if card < 0:
                 negMiddleDeck.append(card)
-        return compHand.index(round(len(compHand) * (participant[1] * ((negMiddleDeck.index(currentBid) + 1) / len(negMiddleDeck)))))
+        validList = []
+        for card in compHand:
+            validList.append(calcAversion(compHand, card, currentBid, negMiddleDeck))
+        rescaledAversion = rescale(validList, participant[1], False)
+        return compHand.index(round(len(compHand) * (rescaledAversion * ((negMiddleDeck.index(currentBid) + 1) / len(negMiddleDeck)))))
