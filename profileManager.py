@@ -20,7 +20,7 @@ def newUser(userInput, profileList):
             print("Duplicate name, try again.")
             duplicate = True
     if not duplicate:
-        profileList["profileList"].append({"user":userInput, "aversion":0, "aversionList":[], "aggression":0, "aggressionList":[], "wins": 0, "losses": 0, "ties":0})
+        profileList["profileList"].append({"user":userInput, "aversion":1, "aversionList":[], "aggression":1, "aggressionList":[], "deception":0.5, "wins": 0, "losses": 0, "ties":0})
         statsProfiles = open("profiles.txt", "w")
         statsProfiles.truncate(0)
         statsProfiles.seek(0)

@@ -214,8 +214,9 @@ class WindowGame():
         self.master = master
         print("Game window created for " + profile["user"] + ".")
         
+        global compAttributes
         compAttributes = sim.simulateTourney(profile)
-        print("Tournament completed. " + compAttributes + " is the winner!")
+        print("Tournament completed. " + str(compAttributes) + " is the winner!")
         
         global valueCardsPlayer
         global valueCardsComputer
@@ -255,7 +256,7 @@ class WindowGame():
         
         # Get current card to bid on.
         currentBid = random.choice(bidDict)
-        bidDict.remove(currentBid)
+        
 
         image = Image.open(currentBid["image"])
         img = ImageTk.PhotoImage(image)
@@ -320,8 +321,11 @@ class WindowGame():
         global playerScore
         global computerScore
         global profileList
+        global compAttributes
         
-        computerChoice = manager.decide(valueCardsPlayer, valueCardsComputer, currentBid)
+        computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)-1]
+        print(computerChoice)
+        print(valueCardsComputer)
         valueCardsComputer.remove(computerChoice)
         
         if currentBid["value"] > 0:
@@ -329,6 +333,7 @@ class WindowGame():
             for card in bidDict:
                 if card["value"] > 0:
                     posMiddleDeck.append(card["value"])
+            print(posMiddleDeck)
             manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile)
             
             if cardNumber > computerChoice:
@@ -349,6 +354,7 @@ class WindowGame():
                 playerScore += currentBid["value"]
         
         valueCardsPlayer.remove(cardNumber)
+        bidDict.remove(currentBid)
         
         self.wipeButtons(playersHand, history)
         self.bidLabel.destroy()
@@ -362,7 +368,6 @@ class WindowGame():
         if bidDict != []:
             
             currentBid = random.choice(bidDict)
-            bidDict.remove(currentBid)
             
             playersHand = Frame(master)
             playersHand.grid(row=3, column=1)
