@@ -34,29 +34,16 @@ class Window1:
         self.intro.configure(background="#034D01")
         self.intro.configure(foreground="white")
         self.intro.grid(row=1, column=1, sticky=NSEW)
-
-        self.play = Button(self.master, text="Play against Dan's AI", command=self.load_dan)
-        self.play.grid(row=2, column=1, pady=(10, 0))
         
-        self.playSpence = Button(self.master, text="Play against Spencer's AI", command=lambda:self.load_spence(master))
-        self.playSpence.grid(row=3, column=1, pady=(10, 0))
+        self.playSpence = Button(self.master, text="Play", command=lambda:self.load_spence(master))
+        self.playSpence.grid(row=2, column=1, pady=(0, 0))
 
         self.close = Button(self.master, text="Close", command=master.destroy)
-        self.close.grid(row=4, column=1, pady=(10, 0))
-
-    def load_dan(self):
-        
-        self.intro.destroy()
-        self.play.destroy()
-        self.playSpence.destroy()
-        self.close.destroy()
-
-        self.another = Window2(self.master)
+        self.close.grid(row=3, column=1, pady=(10, 0))
     
     def load_spence(self, master):
         
         self.intro.destroy()
-        self.play.destroy()
         self.playSpence.destroy()
         self.close.destroy()
         master.grid_rowconfigure(5, weight=0)
@@ -450,154 +437,6 @@ class WindowGame():
         
         self.another = WindowGame(self.master, profile)
         
-    def load_game(self):
-
-        self.valueCardsLabel.destroy()
-        self.continueGame.destroy()
-        self.label.destroy()
-        self.listLabel.destroy()
-        self.playerLabel.destroy()
-        self.bidLabel.destroy()
-        self.playerScoreLabel.destroy()
-        self.computerScoreLabel.destroy()
-        
-        self.another = Computer(self.master)        
-
-    def load_new(self):
-
-        self.endGame.destroy()
-        self.mm.destroy()
-        self.label.destroy()
-        self.playerWinsLabel.destroy()
-        self.computerWinsLabel.destroy()
-
-        self.another = Window1(self.master)
-
-class Window2:
-
-    def __init__(self, master):
-
-        self.master = master
-
-        self.difficulty = Label(master, text="\nPlease select a difficulty: \n")
-        self.difficulty.pack()
-
-        self.easy = Button(self.master, text="Easy", command=self.load_game)
-        self.easy.pack()
-
-        self.medium = Button(self.master, text="Medium", command=self.load_game)
-        self.medium.pack()
-
-        self.hard = Button(self.master, text="Hard", command=self.load_game)
-        self.hard.pack()
-
-        self.mm = Button(self.master, text="Main Menu", command=self.load_new)
-        self.mm.pack()
-
-    def load_game(self):
-
-        self.difficulty.destroy()
-        self.easy.destroy()
-        self.medium.destroy()
-        self.hard.destroy()
-        self.mm.destroy()
-
-        self.another = Game(self.master)
-
-    def load_new(self):
-        
-        self.difficulty.destroy()
-        self.easy.destroy()
-        self.medium.destroy()
-        self.hard.destroy()
-        self.mm.destroy()
-
-        self.another = Window1(self.master)
-
-class Game:
-
-    def __init__(self, master):
-
-        global valueCardsPlayer
-        global bidCards
-        global currentBid
-        global currentPlayerBid
-        global playerScore
-        global computerScore
-
-        self.master = master
-
-        image = Image.open("card.png")
-        img = ImageTk.PhotoImage(image)
-        
-        self.label = Label(image = img)
-        self.label.image = img
-        self.label.pack()
-
-        # If players have no cards left, the game is over.
-
-        if (valueCardsPlayer == [] and valueCardsComputer == []):
-
-            if (playerScore > computerScore):
-                self.playerWinsLabel = Label(master, text="PLAYER WINS!")
-                self.playerWinsLabel.pack()
-            else:
-                self.computerWinsLabel = Label(master, text="COMPUTER WINS!")
-                self.computerWinsLabel.pack()
-
-            self.endGame = Label(master, text="The game is over.")
-            self.endGame.pack()
-
-            self.mm = Button(self.master, text="Close", command=master.destroy)
-            self.mm.pack()
-            
-        else:
-
-            # Get current card to bid on.
-
-            bidCards = random.sample(bidCards, len(bidCards))
-            currentBid = random.choice(bidCards)
-
-            self.bidLabel = Label(master, text="Current Bid Card: " + str(currentBid))
-            self.bidLabel.pack()
-
-            # Player's turn text.
-
-            self.playerLabel = Label(master, text="\nPLAYER'S TURN")
-            self.playerLabel.pack()
-
-            # Choose a card amount of bid on current card (currently random).
-
-            valueCardsPlayer = random.sample(valueCardsPlayer, len(valueCardsPlayer))
-            currentValueCard = random.choice(valueCardsPlayer)
-
-            self.listLabel = Label(master, text=str(valueCardsPlayer))
-            self.listLabel.pack()
-
-            self.valueCardsLabel = Label(master, text=str(currentValueCard))
-            self.valueCardsLabel.pack()
-
-            # Save the current card the player is bidding.
-
-            currentPlayerBid = currentValueCard
-
-            # Current scores.
-
-            self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
-            self.playerScoreLabel.pack()
-
-            self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
-            self.computerScoreLabel.pack()
-
-            # Remove the card used to bid.
-
-            valueCardsPlayer.remove(currentValueCard)
-
-            # Continue to computer's turn to bid.
-            
-            self.continueGame = Button(self.master, text="Continue", command=self.load_game)
-            self.continueGame.pack()
-
     def load_game(self):
 
         self.valueCardsLabel.destroy()

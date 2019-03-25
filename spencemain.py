@@ -20,9 +20,20 @@ def calcAversion(playerHand, playerPlayed, lastCard, negMiddleDeck):
 def calcAggression(playerHand, playerPlayed, lastCard, posMiddleDeck):
     return ((playerHand.index(playerPlayed) + 1) / len(playerHand)) / ((posMiddleDeck.index(lastCard) + 1) / len(posMiddleDeck))
 
+def calcDeception(playerHand, compHand, playerPlayed, lastCard, middleDeck):
+    percentMatrix = generatePercents(playerHand, compHand)
+    topCards = []
+    for row in percentMatrix:
+        if row == 100:
+            topCards.append(percentMatrix.index(row))
+    if playerHand.index(playerPlayed) in topCards:
+        return 0
+    else:
+        return 1
+
 def updateAggression(playerHand, playerPlayed, lastCard, posMiddleDeck, userProfile):
     newToList = calcAggression(playerHand, playerPlayed, lastCard, posMiddleDeck)
-    userProfile["aggressionList"].append(newToList)
+    userProfile["aggressionList"].append(round(newToList, 3))
     newRating = round(sum(userProfile["aggressionList"]) / float(len(userProfile["aggressionList"])), 3)
     if newRating > 2:
         newRating = 2
@@ -30,29 +41,21 @@ def updateAggression(playerHand, playerPlayed, lastCard, posMiddleDeck, userProf
 
 def updateAversion(playerHand, playerPlayed, lastCard, negMiddleDeck, userProfile):
     newToList = calcAversion(playerHand, playerPlayed, lastCard, negMiddleDeck)
-    userProfile["aversionList"].append(newToList)
+    userProfile["aversionList"].append(round(newToList, 3))
     newRating = round(sum(userProfile["aversionList"]) / float(len(userProfile["aversionList"])), 3)
     if newRating > 1.5:
         newRating = 1.5
     userProfile["aversion"] = newRating
     
+def updateDeception(playerHand, playerPlayed, compHand, lastCard, userProfile):
+    newToList = calcDeception(playerHand, compHand, playerPlayed, lastCard, middleDeck)
+    userProfile["deceptionList"].append(round(newToList, 3))
+    newRating = round(sum(userProfile["deceptionList"]) / float(len(userProfile["deceptionList"])), 3)
+    userProfile["deception"] = newRating
+    
 def initialize():
     profileList = profile.loadProfiles()
     return profileList
-
-def buildList(bidDict, compHand):
-    bidList = []
-    for card in bidDict:
-        if card > 5:
-            bidList.append([card, [card + 5]])
-        else:
-            toAdd = []
-            if (abs(card) + abs(card)) in compHand:
-                toAdd.append((abs(card)) + abs(card))
-            if (abs(card) + abs(card) - 1) in compHand:
-                toAdd.append((abs(card)) + abs(card) - 1)
-            bidList.append([card, toAdd])
-    return bidList
 
 def decide(playerHand, compHand, participant, currentBid, bidDict):
     if len(compHand) == 1:
@@ -67,17 +70,14 @@ def decide(playerHand, compHand, participant, currentBid, bidDict):
         else:
             return 0
     print(bidDict)
-    bidList = buildList(bidDict, compHand)
+    bidList = [[-5, [10, 9]], [-4, [8, 7]], [-3, [6, 5]], [-2, [4, 3]], [-1, [2, 1]], [1, [2, 1]], [2, [4, 3]], [3, [6, 5]], [4, [8, 7]], [5, [9, 10]], [6, [11]], [7, [12]], [8, [13]], [9, [14]], [10, [15]]]
     print(bidList)
     for bid in bidList:
         print("currentBid: " + str(currentBid))
         print("compHand: " + str(compHand))
         print("bid: " + str(bid))
         if bid[0] == currentBid:
-            print("true")
-            if len(bid[1]) != 0:
-                result = random.choice(bid[1])
-                break
+            result = random.choice(bid[1])
             if currentBid > 0:
                 if participant[0] > 1:
                     count = 1
