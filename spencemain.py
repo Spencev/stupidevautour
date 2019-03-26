@@ -71,66 +71,69 @@ def decide(playerHand, compHand, participant, currentBid, bidDict):
             return 0
     print(bidDict)
     bidList = [[-5, [10, 9]], [-4, [8, 7]], [-3, [6, 5]], [-2, [4, 3]], [-1, [2, 1]], [1, [2, 1]], [2, [4, 3]], [3, [6, 5]], [4, [8, 7]], [5, [9, 10]], [6, [11]], [7, [12]], [8, [13]], [9, [14]], [10, [15]]]
-    print(bidList)
     for bid in bidList:
         print("currentBid: " + str(currentBid))
         print("compHand: " + str(compHand))
         print("bid: " + str(bid))
         if bid[0] == currentBid:
-            result = random.choice(bid[1])
-            if currentBid > 0:
-                if participant[0] > 1:
-                    count = 1
-                    while True:
-                        if result + count in compHand:
-                            result = result + count
-                            print("twio" + str(result))
-                            break
-                        if result - (count + 1) in compHand:
-                            result = result - (count + 1)
-                            print("three " + str(result))
-                            break
-                        count += 1
-                if participant[0] <= 1:
-                    count = 1
-                    while True:
-                        if result - count in compHand:
-                            result = result - count
-                            print("four " + str(result))
-                            break
-                        if result + (count + 1) in compHand:
-                            result = result + (count + 1)
-                            print("five " + str(result))
-                            break
-                        count += 1
-            else:
-                if participant[1] > 0.75:
-                    count = 1
-                    while True:
-                        if result + count in compHand:
-                            result = result + count
-                            print("six " + str(result))
-                            break
-                        if result - (count + 1) in compHand:
-                            result = result - (count + 1)
-                            print("seven " + str(result))
-                            break
-                        count += 1
-                if participant[1] <= 0.75:
-                    count = 1
-                    while True:
-                        if result - count in compHand:
-                            result = result - count
-                            print("eight " + str(result))
-                            break
-                        if result + (count + 1) in compHand:
-                            result = result + (count + 1)
-                            print("nine " + str(result))
-                            break
-                        count += 1
-            for bidValue in bidList:
-                if result in bidValue[1]:
-                    bidValue[1].remove(result)
-            break
-    print(result)
+            countLimit = 0
+            for suggested in bid[1]:
+                countLimit += 1
+                if suggested in compHand:
+                    result = suggested
+                    break
+                if suggested not in compHand and countLimit > 1:
+                    result = random.choice(bid[1])
+                    if currentBid > 0:
+                        if participant[0] > 1:
+                            count = 1
+                            while True:
+                                if result + count in compHand:
+                                    result = result + count
+                                    print("two" + str(result))
+                                    break
+                                if result - (count + 1) in compHand:
+                                    result = result - (count + 1)
+                                    print("three " + str(result))
+                                    break
+                                count += 1
+                        if participant[0] <= 1:
+                            count = 1
+                            while True:
+                                if result - count in compHand:
+                                    result = result - count
+                                    print("four " + str(result))
+                                    break
+                                if result + (count + 1) in compHand:
+                                    result = result + (count + 1)
+                                    print("five " + str(result))
+                                    break
+                                count += 1
+                    else:
+                        if participant[1] > 0.75:
+                            count = 1
+                            while True:
+                                if result + count in compHand:
+                                    result = result + count
+                                    print("six " + str(result))
+                                    break
+                                if result - (count + 1) in compHand:
+                                    result = result - (count + 1)
+                                    print("seven " + str(result))
+                                    break
+                                count += 1
+                        if participant[1] <= 0.75:
+                            count = 1
+                            while True:
+                                if result - count in compHand:
+                                    result = result - count
+                                    print("eight " + str(result))
+                                    break
+                                if result + (count + 1) in compHand:
+                                    result = result + (count + 1)
+                                    print("nine " + str(result))
+                                    break
+                                count += 1
+    print("result: " + str(result))
+    print("compHand.index: " + str(compHand.index(result)))
     return compHand.index(result)

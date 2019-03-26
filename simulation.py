@@ -17,7 +17,7 @@ def playGame(participant1, participant2):
     middleDeck = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     while len(middleDeck) > 0:
         currentBid = random.choice(middleDeck)
-        pick = (utility.decide(hand1, hand2, participant1, currentBid, middleDeck))
+        pick = utility.decide(hand1, hand2, participant1, currentBid, middleDeck)
         print(pick)
         print(hand1)
         hand1Choice = hand1[pick]
