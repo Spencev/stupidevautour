@@ -310,9 +310,7 @@ class WindowGame():
         global profileList
         global compAttributes
         
-        computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)-1]
-        print(computerChoice)
-        print(valueCardsComputer)
+        computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)]
         valueCardsComputer.remove(computerChoice)
         
         if currentBid["value"] > 0:

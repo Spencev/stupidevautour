@@ -6,7 +6,7 @@ import numpy as np
 def setParticipants(amount):
     participantList = []
     for participant in range(0, amount):
-        participantList.append([round(random.uniform(0, 2), 4), round(random.uniform(0, 1.5), 4), random.random()])
+        participantList.append([round(random.uniform(0, 2), 4), round(random.uniform(0, 1.5), 4), round(random.random(), 4)])
     return participantList
 
 def playGame(participant1, participant2):
@@ -18,10 +18,8 @@ def playGame(participant1, participant2):
     while len(middleDeck) > 0:
         currentBid = random.choice(middleDeck)
         pick = utility.decide(hand1, hand2, participant1, currentBid, middleDeck)
-        print(pick)
-        print(hand1)
         hand1Choice = hand1[pick]
-        pick = (utility.decide(hand2, hand1, participant2, currentBid, middleDeck))
+        pick = utility.decide(hand2, hand1, participant2, currentBid, middleDeck)
         hand2Choice = hand2[pick]
         hand1.remove(hand1Choice)
         hand2.remove(hand2Choice)
