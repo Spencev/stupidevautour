@@ -1,7 +1,6 @@
 import profileManager as profile
 import random
 import numpy as np
-import bisect
 
 def generatePercents(playerHand, compHand): #generate the percent matrix to figure out if the participant has a 100 percent chance of wining and at what cards
     percentMatrix = []
