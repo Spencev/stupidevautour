@@ -4,7 +4,14 @@ import random
 import spencemain as manager
 import simulation as sim
 
-valueCardsPlayer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+#Game engine code written by Spencer Delaney and Daniel Hughes (this file)
+#Rest of the code written by Spencer Delaney
+
+#The comments don't go into a huge amount of detail for the GUI but go more in depth for stuff that matters more
+#Further explanation provided in the pdf included in this folder
+
+#used global variables which, despite their stigma, are not that bad to work with with proper organization
+valueCardsPlayer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] 
 valueCardsComputer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 bidCards = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -15,13 +22,13 @@ currentPlayerBid = 0
 playerScore = 0
 computerScore = 0
 
-profileList = manager.initialize()
+profileList = manager.initialize() #loading profile list
 
 class Window1:
 
     def __init__(self, master):
         
-        self.master = master
+        self.master = master #configuration for the ui on the launch screen
         master.title("Stupid Vulture")
         master.geometry("1080x720")
         master.configure(background="#034D01")
@@ -41,81 +48,81 @@ class Window1:
         self.close = Button(self.master, text="Close", command=master.destroy)
         self.close.grid(row=3, column=1, pady=(10, 0))
     
-    def load_spence(self, master):
+    def load_spence(self, master): #load the next window after hittin play
         
-        self.intro.destroy()
+        self.intro.destroy() #clean up the window
         self.playSpence.destroy()
         self.close.destroy()
         master.grid_rowconfigure(5, weight=0)
         
-        self.another = WindowSpencePick(self.master)
+        self.another = WindowSpencePick(self.master) #move to next window
         
-class WindowSpencePick:
+class WindowSpencePick: #window which has profile selection
     
     def __init__(self, master):
         global profileList
         
         self.master = master
         
-        self.infoText = Label(master, text="Please select a profile")
+        self.infoText = Label(master, text="Please select a profile") #title label
         self.infoText.configure(background="#034D01")
         self.infoText.configure(foreground="white")
         self.infoText.grid(row=1, column=1, sticky=NSEW)
         
         userList = manager.profile.genUsers(profileList)
         
-        rowTracker = 2
+        rowTracker = 2 #track which row we are on for the grid system used
         
-        for userIndex in range(len(userList)):
+        for userIndex in range(len(userList)): #iterate through the profiles to create the buttons to select them
             self.userButton = Button(self.master, text=userList[userIndex], command= lambda userIndex=userIndex: self.load_user(userList[userIndex]))
             self.userButton.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
             rowTracker += 1
         
-        self.createNew = Button(self.master, text="Create a new profile", command=self.createProfile)
+        self.createNew = Button(self.master, text="Create a new profile", command=self.createProfile) #create a new profile instead
         self.createNew.grid(row=rowTracker, column=1, pady=(20, 0), sticky=NSEW)
         rowTracker += 1
         
-        self.checkStats = Button(self.master, text="Check all stats", command=self.checkStatistics)
+        self.checkStats = Button(self.master, text="Check all stats", command=self.checkStatistics) #check stats for all users
         self.checkStats.grid(row=rowTracker, column=1, pady=(20, 0), sticky=NSEW)
         rowTracker += 1
         
-        self.mm = Button(self.master, text="Main Menu", command=self.load_spence_game)
+        self.mm = Button(self.master, text="Main Menu", command=self.load_spence_game) #back to main menu
         self.mm.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
         rowTracker += 1
         
         master.grid_rowconfigure(rowTracker, weight=1)
 
-    def wipe(self):
+    def wipe(self): #destroy all the profile buttons
         buttonList = self.master.grid_slaves()
         for button in buttonList:
             button.destroy()
     
-    def load_user(self, user):
+    def load_user(self, user): #import the user
         import spencemain as manager
         profile = manager.profile.selectProfile(user, profileList)
         
         self.wipe()
         self.another = WindowGame(self.master, profile)
     
-    def createProfile(self):
+    def createProfile(self): #move to create profile window
         self.wipe()
         self.another = createProfileWindow(self.master)
     
-    def checkStatistics(self):
+    def checkStatistics(self): #move to checking stats profile
         self.wipe()
         self.another = statsWindow(self.master)
     
-    def load_spence_game(self):
+    def load_spence_game(self): #back to main menu
         self.wipe()
         self.another = Window1(self.master)
         
-class statsWindow:
+class statsWindow: #window for profile statistics
     def __init__(self, master):
         global profileList
         
         self.master = master
         
-        self.infoTag = Label(master, text="\nStats for all profiles")
+        self.infoTag = Label(master, text="\nStats for all profiles") #title text
         self.infoTag.configure(background="#034D01")
         self.infoTag.configure(foreground="white")
         self.infoTag.grid(row=1, column=1, sticky=NSEW)
@@ -125,7 +132,7 @@ class statsWindow:
         compTies = 0
         rowTracker = 2
         
-        for profile in profileList["profileList"]:
+        for profile in profileList["profileList"]: #iterating through all of the profile
             compWins += profile["losses"]
             compLosses += profile["wins"]
             compTies += profile["ties"]
@@ -135,26 +142,26 @@ class statsWindow:
             self.userLabel.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
             rowTracker += 1
         
-        self.compLabel = Label(self.master, text="Computer: Wins: " + str(compWins) + " Losses: " + str(compLosses) + " Ties: " + str(compTies) + "\n")
+        self.compLabel = Label(self.master, text="Computer: Wins: " + str(compWins) + " Losses: " + str(compLosses) + " Ties: " + str(compTies) + "\n") #adds the computer's stats
         self.compLabel.configure(background="#034D01")
         self.compLabel.configure(foreground="white")
         self.compLabel.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
         rowTracker += 1
         
-        self.backButton = Button(master, text="Back to profile select", command=self.backToMenu)
+        self.backButton = Button(master, text="Back to profile select", command=self.backToMenu) #back to profile selection
         self.backButton.grid(row=rowTracker, column=1, pady=(10, 0), sticky=NSEW)
     
-    def wipe(self):
+    def wipe(self): #clear page
         buttonList = self.master.grid_slaves()
         for button in buttonList:
             button.destroy()
         
-    def backToMenu(self):
+    def backToMenu(self): #go back to menu
         self.wipe()
         self.backButton.destroy()
         self.another = WindowSpencePick(self.master)
 
-class createProfileWindow:
+class createProfileWindow: #window for creating a profile
     
     def __init__(self, master):
         
@@ -174,7 +181,7 @@ class createProfileWindow:
         self.cancelButton = Button(master, text="Cancel", command=lambda: self.backToProfile())
         self.cancelButton.grid(row=4, column=1, pady=(10, 0), sticky=NSEW)
     
-    def insertProfile(self, userInput):
+    def insertProfile(self, userInput): #add the profile to the list
         import spencemain as manager
         
         manager.profile.newUser(userInput, profileList)
@@ -186,7 +193,7 @@ class createProfileWindow:
         
         self.another = WindowGame(self.master, profile)
     
-    def backToProfile(self):
+    def backToProfile(self): #back to previous screen
         
         buttonList = self.master.grid_slaves()
         for button in buttonList:
@@ -194,7 +201,7 @@ class createProfileWindow:
         
         self.another = WindowSpencePick(self.master)
     
-class WindowGame():
+class WindowGame(): #window for actual game
     
     def __init__(self, master, profile):
         
@@ -202,7 +209,7 @@ class WindowGame():
         print("Game window created for " + profile["user"] + ".")
         
         global compAttributes
-        compAttributes = sim.simulateTourney(profile)
+        compAttributes = sim.simulateTourney(profile) #simulates the tournament to find the best agent 
         print("Tournament completed. " + str(compAttributes) + " is the winner!")
         
         global valueCardsPlayer
@@ -216,6 +223,7 @@ class WindowGame():
 
         self.master = master
         
+        #data for the running of the game
         valueCardsPlayer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         valueCardsComputer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
         
@@ -244,7 +252,7 @@ class WindowGame():
         # Get current card to bid on.
         currentBid = random.choice(bidDict)
         
-
+        #show the image of the card on screen
         image = Image.open(currentBid["image"])
         img = ImageTk.PhotoImage(image)
         
@@ -282,7 +290,7 @@ class WindowGame():
         self.backButton = Button(self.master, text="Back to menu", command= lambda: self.backToMenu(master))
         self.backButton.place(relx=1, x=-10, y=40, anchor=SE)
 
-    def backToMenu(self, master):
+    def backToMenu(self, master): #quit the game
         widgetList = self.master.grid_slaves() + self.master.place_slaves()
         for widget in widgetList:
             widget.destroy()
@@ -296,7 +304,7 @@ class WindowGame():
         for widget in widgetList:
             widget.destroy()
     
-    def playCard(self, master, cardNumber, profile, playersHand, history):
+    def playCard(self, master, cardNumber, profile, playersHand, history): #triggered when the player plays a card 
         import spencemain as manager
         
         self.master = master
@@ -310,18 +318,35 @@ class WindowGame():
         global profileList
         global compAttributes
         
-        computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)]
-        valueCardsComputer.remove(computerChoice)
+        if currentBid["value"] == bidDict[-1]["value"]: #checking to see if the player did a deception
+            manager.updateDeception(playersHand, cardNumber, valueCardsComputer, currentBid["value"], profile) #this is accomplished in here
+            
+            if currentBid["value"] > 0:
+                posMiddleDeck = []
+                for card in bidDict:
+                    if card["value"] > 0:
+                        posMiddleDeck.append(card["value"])
+                manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile) #update the players aggression
+            
+            computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)] #get the computers choice on this bid
+            valueCardsComputer.remove(computerChoice)
+            
+            if cardNumber > computerChoice: #adding scores
+                playerScore += currentBid["value"]
+            if cardNumber < computerChoice:
+                computerScore += currentBid["value"]
         
-        if currentBid["value"] > 0:
+        elif currentBid["value"] > 0: #aggression checking 
             posMiddleDeck = []
             for card in bidDict:
                 if card["value"] > 0:
                     posMiddleDeck.append(card["value"])
-            print(posMiddleDeck)
-            manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile)
+            manager.updateAggression(playersHand, cardNumber, currentBid["value"], posMiddleDeck, profile) #update the players aggression
             
-            if cardNumber > computerChoice:
+            computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)] #get the computers choice on this bid
+            valueCardsComputer.remove(computerChoice)
+            
+            if cardNumber > computerChoice: #adding scores
                 playerScore += currentBid["value"]
             if cardNumber < computerChoice:
                 computerScore += currentBid["value"]
@@ -331,14 +356,17 @@ class WindowGame():
             for card in bidDict:
                 if card["value"] < 0:
                     negMiddleDeck.append(card["value"])
-            manager.updateAversion(playersHand, cardNumber, currentBid["value"], negMiddleDeck, profile)
+            manager.updateAversion(playersHand, cardNumber, currentBid["value"], negMiddleDeck, profile) #update the players aversion
             
-            if cardNumber > computerChoice:
+            computerChoice = valueCardsComputer[manager.decide(valueCardsPlayer, valueCardsComputer, compAttributes, currentBid["value"], bidCards)] #get the computers choice on this bid
+            valueCardsComputer.remove(computerChoice)
+            
+            if cardNumber > computerChoice: #adding scores
                 computerScore += currentBid["value"]
             if cardNumber < computerChoice:
                 playerScore += currentBid["value"]
         
-        valueCardsPlayer.remove(cardNumber)
+        valueCardsPlayer.remove(cardNumber) #remove the cards played from the list
         bidDict.remove(currentBid)
         
         self.wipeButtons(playersHand, history)
@@ -350,7 +378,7 @@ class WindowGame():
         self.playerChoiceLabel.destroy()
         self.computerChoiceLabel.destroy()
         
-        if bidDict != []:
+        if bidDict != []: #go to next card
             
             currentBid = random.choice(bidDict)
             
@@ -365,23 +393,23 @@ class WindowGame():
             self.bidLabel.configure(background="#034D01")
             self.bidLabel.grid(row=2, column=1)
         
-        else:
+        else: #game is over
             
-            if (playerScore > computerScore):
+            if (playerScore > computerScore): #player wins
                 self.playerWinsLabel = Label(master, text="You win!")
                 self.playerWinsLabel.configure(foreground="white")
                 self.playerWinsLabel.configure(background="#034D01")
                 self.playerWinsLabel.grid(row=3, column=1)
                 profile["wins"] += 1
                 
-            elif (playerScore < computerScore):
+            elif (playerScore < computerScore): #comp wins
                 self.computerWinsLabel = Label(master, text="Computer wins!")
                 self.computerWinsLabel.configure(foreground="white")
                 self.computerWinsLabel.configure(background="#034D01")
                 self.computerWinsLabel.grid(row=3, column=1)
                 profile["losses"] += 1
                 
-            else:
+            else: #tie
                 self.tiedLabel = Label(master, text="You tied!")
                 self.tiedLabel.configure(foreground="white")
                 self.tiedLabel.configure(background="#034D01")
@@ -401,7 +429,7 @@ class WindowGame():
             self.closeGame = Button(self.master, text="Exit Game", command=master.destroy)
             self.closeGame.grid(row=8, column=1, pady=(10,0))
         
-        for numberCard in valueCardsPlayer:
+        for numberCard in valueCardsPlayer: #creating the buttons for the player to select the cards
             self.cardPickButton = Button(playersHand, text=numberCard, command= lambda numberCard=numberCard: self.playCard(master, numberCard, profile, valueCardsPlayer, history))
             self.cardPickButton.pack(side='left')
         
@@ -425,7 +453,7 @@ class WindowGame():
         self.playerChoiceLabel.configure(background="#034D01")
         self.playerChoiceLabel.pack()
 
-    def goAgain(self, master, profile):
+    def goAgain(self, master, profile): #play again
         
         widgetList = self.master.grid_slaves() + self.master.place_slaves()
         for widget in widgetList:
@@ -455,106 +483,6 @@ class WindowGame():
         self.label.destroy()
         self.playerWinsLabel.destroy()
         self.computerWinsLabel.destroy()
-
-        self.another = Window1(self.master)
-
-class Computer:
-    
-    def __init__(self, master):
-
-        global valueCardsComputer
-        global computerScore
-        global playerScore
-        global bidCards
-        global currentBid
-        global currentPlayerBid
-
-        self.master = master
-
-        image = Image.open("card.png")
-        img = ImageTk.PhotoImage(image)
-        
-        self.label = Label(image = img)
-        self.label.image = img
-        self.label.pack()
-
-        # If players have no cards left, the game is over.
-
-        if (valueCardsComputer == [] and valueCardsPlayer == []):
-
-            self.endGame = Label(master, text="The game is over.")
-            self.endGame.pack()
-
-            self.mm = Button(self.master, text="Close", command=master.destroy)
-            self.mm.pack()
-            
-        else:
-
-            # Restate current card to bid on.
-
-            self.bidLabel = Label(master, text="Current Bid Card: " + str(currentBid))
-            self.bidLabel.pack()
-
-            # Player's turn text.
-
-            self.playerLabel = Label(master, text="\nCOMPUTER'S TURN")
-            self.playerLabel.pack()
-
-            # Choose a card amount of bid on current card (currently random).
-
-            valueCardsComputer = random.sample(valueCardsComputer, len(valueCardsComputer))
-            currentValueCard = random.choice(valueCardsComputer)
-
-            self.listLabel = Label(master, text=str(valueCardsComputer))
-            self.listLabel.pack()
-
-            self.valueCardsLabel = Label(master, text=str(currentValueCard))
-            self.valueCardsLabel.pack()
-
-            # See if player or computer wins the card.
-
-            playerDist = abs(currentBid - currentPlayerBid)
-            compDist = abs(currentBid- currentValueCard)
-
-            if (playerDist < compDist):
-                playerScore = playerScore + currentBid
-            else:
-                computerScore = computerScore + currentBid
-
-            self.playerScoreLabel = Label(master, text="\n\nPlayer's Score: " + str(playerScore))
-            self.playerScoreLabel.pack()
-
-            self.computerScoreLabel = Label(master, text="Computer's Score: " + str(computerScore))
-            self.computerScoreLabel.pack()
-
-            # Remove the card used to bid AND remove bid card to continue the game.
-
-            valueCardsComputer.remove(currentValueCard)
-            bidCards.remove(currentBid)
-
-            # Continue back to player. 1 round has been completed.
-            
-            self.continueGame = Button(self.master, text="Continue", command=self.load_game)
-            self.continueGame.pack()
-
-    def load_game(self):
-
-        self.valueCardsLabel.destroy()
-        self.continueGame.destroy()
-        self.label.destroy()
-        self.listLabel.destroy()
-        self.playerLabel.destroy()
-        self.bidLabel.destroy()
-        self.playerScoreLabel.destroy()
-        self.computerScoreLabel.destroy()
-              
-        self.another = Game(self.master)
-
-    def load_new(self):
-
-        self.endGame.destroy()
-        self.mm.destroy()
-        self.label.destroy()
 
         self.another = Window1(self.master)
         
